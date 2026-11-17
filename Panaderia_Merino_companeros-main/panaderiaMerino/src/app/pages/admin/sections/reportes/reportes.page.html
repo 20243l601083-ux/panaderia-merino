@@ -1,0 +1,163 @@
+<ion-content class="admin-section-page">
+
+  <div class="section-shell">
+
+    <div class="dashboard-grid">
+
+      <!-- MENÚ LATERAL -->
+      <aside class="left-nav-card">
+
+        <div class="sidebar-logo-box">
+          <img src="assets/imagenes/logo1.jpeg" alt="Logo Panadería">
+        </div>
+
+        <h3>Secciones</h3>
+
+        <ion-list>
+
+          <ion-item
+            class="left-nav-item"
+            routerLink="/admin/dashboard"
+            routerLinkActive="active-link"
+            [routerLinkActiveOptions]="{ exact: true }">
+            <ion-label>Inicio</ion-label>
+          </ion-item>
+
+          <ion-item
+            class="left-nav-item"
+            routerLink="/admin/clientes"
+            routerLinkActive="active-link"
+            [routerLinkActiveOptions]="{ exact: true }">
+            <ion-label>Clientes</ion-label>
+          </ion-item>
+
+          <ion-item
+            class="left-nav-item"
+            routerLink="/admin/pedidos"
+            routerLinkActive="active-link"
+            [routerLinkActiveOptions]="{ exact: true }">
+            <ion-label>Pedidos</ion-label>
+          </ion-item>
+
+          <ion-item
+            class="left-nav-item"
+            routerLink="/admin/inventario"
+            routerLinkActive="active-link"
+            [routerLinkActiveOptions]="{ exact: true }">
+            <ion-label>Inventario</ion-label>
+          </ion-item>
+
+          <ion-item
+            class="left-nav-item"
+            routerLink="/admin/empleados"
+            routerLinkActive="active-link"
+            [routerLinkActiveOptions]="{ exact: true }">
+            <ion-label>Empleados</ion-label>
+          </ion-item>
+
+          <ion-item
+            class="left-nav-item"
+            routerLink="/admin/repartidores"
+            routerLinkActive="active-link"
+            [routerLinkActiveOptions]="{ exact: true }">
+            <ion-label>Repartidores</ion-label>
+          </ion-item>
+
+          <ion-item
+            class="left-nav-item"
+            routerLink="/admin/gastos"
+            routerLinkActive="active-link"
+            [routerLinkActiveOptions]="{ exact: true }">
+            <ion-label>Gastos</ion-label>
+          </ion-item>
+
+          <ion-item
+            class="left-nav-item"
+            routerLink="/admin/reportes"
+            routerLinkActive="active-link"
+            [routerLinkActiveOptions]="{ exact: true }">
+            <ion-label>Reportes</ion-label>
+          </ion-item>
+
+        </ion-list>
+
+      </aside>
+
+      <!-- CONTENIDO PRINCIPAL -->
+      <div class="content-stack">
+
+        <!-- ENCABEZADO Y BOTÓN EXCEL -->
+        <section class="hero-card" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+          <div>
+            <p class="eyebrow" style="margin: 0; color: #8b5a2b; font-size: 12px; font-weight: 800; text-transform: uppercase;">Panel administrativo</p>
+            <h1 style="margin: 4px 0 8px; color: #3e2311; font-size: 30px; font-weight: 800;">Generación de Reportes</h1>
+            <p style="margin: 0; color: #7c5c42; font-size: 14px;">Consulta directa a vistas SQL y exportación en formato Excel (.xlsx)</p>
+          </div>
+
+          <button
+            type="button"
+            (click)="exportarExcel()"
+            [disabled]="cargando || datos.length === 0"
+            style="background: #1e7e34; color: #fff; border: none; padding: 12px 20px; border-radius: 12px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px rgba(31, 122, 61, 0.22);">
+            Descargar Excel (.xlsx)
+          </button>
+        </section>
+
+        <!-- BOTONES PARA CAMBIAR ENTRE LOS 5 REPORTES -->
+        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+          <button
+            *ngFor="let op of opciones"
+            type="button"
+            (click)="seleccionarReporte(op.id)"
+            [style.background]="tipoReporte === op.id ? '#8b5a2b' : '#ffffff'"
+            [style.color]="tipoReporte === op.id ? '#fff' : '#3e2311'"
+            style="border: 1px solid rgba(182, 122, 78, 0.18); padding: 10px 16px; border-radius: 12px; font-weight: 700; cursor: pointer; font-size: 13px;">
+            {{ op.titulo }}
+          </button>
+        </div>
+
+        <!-- TARJETA CONTENEDORA DE RESULTADOS -->
+        <div class="panel-card" style="background: #ffffff; border: 1px solid rgba(182, 122, 78, 0.18); border-radius: 24px; padding: 22px; box-shadow: 0 8px 24px rgba(87, 55, 32, 0.07);">
+
+          <!-- ESTADOS DE CARGA O ERROR -->
+          <div *ngIf="cargando" style="padding: 36px; text-align: center; color: #7c5c42; font-size: 14px;">
+            Cargando datos desde la vista SQL...
+          </div>
+
+          <div *ngIf="error" style="padding: 14px; background: #fdecea; color: #b71c1c; border-radius: 8px; margin-bottom: 16px; font-size: 14px;">
+            {{ error }}
+          </div>
+
+          <!-- TABLA DE RESULTADOS -->
+          <div *ngIf="!cargando && !error && datos.length > 0" style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; color: #3e2311;">
+              <thead>
+                <tr style="background: #fff8f1; border-bottom: 2px solid rgba(182, 122, 78, 0.18);">
+                  <th *ngFor="let col of columnas" style="padding: 13px 14px; text-transform: uppercase; font-size: 12px; font-weight: 800; color: #8b5a2b; letter-spacing: 0.05em;">
+                    {{ col.replace('_', ' ') }}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let fila of datos" style="border-bottom: 1px solid rgba(182, 122, 78, 0.12);">
+                  <td *ngFor="let col of columnas" style="padding: 13px 14px;">
+                    {{ fila[col] }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div *ngIf="!cargando && !error && datos.length === 0" style="padding: 36px; text-align: center; color: #7c5c42; font-size: 14px;">
+            No hay registros disponibles para este reporte.
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</ion-content>

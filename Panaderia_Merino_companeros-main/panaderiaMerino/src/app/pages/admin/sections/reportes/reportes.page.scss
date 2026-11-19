@@ -131,7 +131,7 @@
 
 // BOTÓN EXCEL
 .btn-excel {
-  background: #1f7a3d;
+  background: var(--color-primary);
   color: #ffffff;
   border: none;
   border-radius: 12px;
@@ -139,12 +139,12 @@
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(31, 122, 61, 0.22);
+  box-shadow: 0 4px 12px rgba(139, 90, 43, 0.22);
   transition: transform 0.15s ease, background 0.15s ease;
 }
 
 .btn-excel:hover:not(:disabled) {
-  background: #186231;
+  background: #6e451e;
   transform: translateY(-1px);
 }
 
